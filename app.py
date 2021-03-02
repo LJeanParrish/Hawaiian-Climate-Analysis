@@ -1,8 +1,44 @@
-# 1. import Flask
+# Import Flask and other dependencies
+import numpy as np
+import pandas as pd
+import datetime as dt
+
+import sqlalchemy
+from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, func
+
 from flask import Flask, jsonify
 
-# 2. Create an app, being sure to pass __name__
+#################################################
+# Database Setup
+#################################################
+engine = create_engine("sqlite:///hawaii.sqlite")
+
+# reflect an existing database into a new model
+Base = automap_base()
+# reflect the tables
+Base.prepare(engine, reflect=True)
+
+# Save reference to the table
+measurement = Base.classes.measurement
+station= Base.classes.station
+
+#################################################
+# Flask Setup
+#################################################
 app = Flask(__name__)
+
+#Percipitation Dictionary
+percipitation_recordings = [
+
+
+
+
+
+
+
+]
 
 #################################################
 # Flask Routes
