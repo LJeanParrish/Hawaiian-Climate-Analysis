@@ -154,34 +154,68 @@ def tobs():
     session = Session(engine)
 
     precipitation = [measurement.id,
-                measurement.station,
-                measurement.date,
-                measurement.prcp,
-                measurement.tobs]
-
-    temp_annual = session.query(*precipitation).\
+    measurement.station,
+    measurement.date,
+    measurement.prcp,
+    measurement.tobs]
+                
+    waihee = session.query(*precipitation).\
     filter(measurement.date > '2016-08-23').\
     filter(measurement.date < '2017-08-23').\
     filter(measurement.station == "USC00519281").all()
 
     session.close()
 
-    return("Hello")
-
-    # # Create a dictionary from the annual temp data and append to temp list
-    # temp_list = []
-    # for temp in temp_annual:
-    #     temperatures_dict = {}
-    #     temperatures_dict["date"] = date
-    #     temperatures_dict["tobs"] = tobs
-    #     temp_list.append(temperatures_dict)
+    # Create a dictionary from the annual temp data and append to temp list
+    temp_list = []
+    for temp in waihee:
+        temperatures_dict = {}
+        temperatures_dict["date"] = date
+        temperatures_dict["tobs"] = tobs
+        temp_list.append(temperatures_dict)
     
-    # return jsonify(temp_list)
+    return jsonify(temp_list)
 
+############################HOW TO DO ALIGATOR CLIPS##############################
 
+#api/v1.0/<start> and /api/v1.0/<start>/<end>
 
+#Return a JSON list of the minimum temperature, the average temperature,and  the max temperature 
+# for a given start or start-end range.
+
+#When given the start only, calculate TMIN, TAVG, and TMAX, for all dates greater than and equal 
+# to the start date.
+
+#When given the start and the end date, calculate the TMIN, TAVG, and TMAX for dates between the 
+# start and end date inclusive.
+
+  # Create a session to link from Python to the DB
+     session = Session(engine)
+
+     """Return a  list of the minimum temperature, the average temperature,.\
+        and the max temperature for a given start or start-end range"""
+
+    ##Query from database full temp results over a range of dates
+    temp_results = session.query(measurement.date, measurement.tobs).all()
+     
+    temp_details = [measurement.date,
+                    measurement.tobs]
+
+    temp_range = session.query(*temp_details).\
+                    filter(measurement.date >= '2016-08-23').\
+                    filter(measurement.date <= '2017-08-23').all()
+    session.close()
+    
+    ##Find the min, max, avg temperature in that date range
+    temp_range_min = session.query(temp_range.tobs, func.min(temp_range.tobs)).first()
+
+    temp_range_max = session.query(temp_range.tobs, func.max(temp_range.tobs)).first()
+
+    temp_range_avg = session.query(temp_range.tobs, func.avg(temp_range.tobs)).first()
+
+    return jsonify(temp_range_min)
+    return jsonify(temp_range_max)
+    return jsonify(temp_range_avg)
 
 if __name__ == "__main__":
      app.run(debug=True)
-
-##combined_df = pd.merge(mouse_metadata, study_results, how='inner', on='station')
