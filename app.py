@@ -72,7 +72,10 @@ def precipitation():
          
      return jsonify(all_percipitation)
 
-    #######################2nd Option#########################################################3
+    #######################2nd Option##########################################################
+
+    ##PROBLEM - CANNOT GET BOTH STATION AND NAME TO RETURN.  CODE DOES NOT LIKE STATION
+
 @app.route("/api/v1.0/stations")
 def stations():
     # Create a session to link from Python to the DB
@@ -163,15 +166,17 @@ def tobs():
 
     session.close()
 
-    # Create a dictionary from the annual temp data and append to temp list
-    temp_list = []
-    for temp in temp_annual:
-        temperatures_dict = {}
-        temperatures_dict["date"] = date
-        temperatures_dict["tobs"] = tobs
-        temp_list.append(temperatures_dict)
+    return("Hello")
+
+    # # Create a dictionary from the annual temp data and append to temp list
+    # temp_list = []
+    # for temp in temp_annual:
+    #     temperatures_dict = {}
+    #     temperatures_dict["date"] = date
+    #     temperatures_dict["tobs"] = tobs
+    #     temp_list.append(temperatures_dict)
     
-    return jsonify(temp_list)
+    # return jsonify(temp_list)
 
 
 
