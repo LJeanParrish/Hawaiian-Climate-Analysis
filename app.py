@@ -59,8 +59,6 @@ def precipitation():
      """Return a list of all percipitation data from reporting stations"""
 
      results = session.query(measurement.date, measurement.prcp).all()
-     
-     #session.close()
 
      # Create a dictionary from the row data and append to a list of all_percipitation
      all_percipitation = []
@@ -72,7 +70,7 @@ def precipitation():
          
      return jsonify(all_percipitation)
 
-    #################################################################################
+##################################################################################################
 @app.route("/api/v1.0/stations")
 def stations():
     # Create a session to link from Python to the DB
@@ -82,8 +80,6 @@ def stations():
     
     stations = session.query(measurement.station, Station.name).distinct()
     
-    #session.close()
-
     # Create a dictionary from the station data and append to a list of all_stations
     all_stations = []
     for station in stations:
@@ -93,8 +89,7 @@ def stations():
     
     return jsonify(all_stations)
 
-################################################################################################################ 
-    
+#################################################################################################### 
 # Define what to do when a user hits the /temperature route
 @app.route("/api/v1.0/tobs")
 def tobs():
@@ -102,30 +97,22 @@ def tobs():
     # Create a session to link from Python to the DB
     session = Session(engine)
 
-    precipitation = [measurement.id,
-    measurement.station,
-    measurement.date,
-    measurement.prcp,
-    measurement.tobs]
-                
-    waihee = session.query(*precipitation).\
+    """Return a tempatures listed for most active data recording station USC00519281"""
+
+    temp_active = session.query(measurement.station, measurement.date, measurement.tobs).\
     filter(measurement.date > '2016-08-23').\
     filter(measurement.date < '2017-08-23').\
     filter(measurement.station == "USC00519281").all()
-
-    session.close()
-
-    # Create a dictionary from the annual temp data and append to temp list
+        
     temp_list = []
-    for temp in waihee:
-        temperatures_dict = {}
-        temperatures_dict["date"] = date
-        temperatures_dict["tobs"] = tobs
-        temp_list.append(temperatures_dict)
+    for tobs in temp_active:
+         temperatures_dict = {}
+         temperatures_dict["tobs"] = tobs
+         temp_list.append(temperatures_dict)
     
     return jsonify(temp_list)
 
-############################HOW TO DO ALIGATOR CLIPS##############################
+############################HOW TO DO ALIGATOR CLIPS##################################################
 
 @app.route("/api/v1.0/<start>")
 def temperature_s(start):
