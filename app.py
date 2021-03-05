@@ -46,7 +46,9 @@ def home():
          f"Available Routes:<br/>"
          f"/api/v1.0/precipitation<br/>"
          f"/api/v1.0/stations<br/>"
-         f"/api/v1.0/tobs"
+         f"/api/v1.0/tobs<br/>"
+         f"/api/v1.0/<start><br/>"
+         f"/api/v1.0/<start>/<end>"
      )
 
 # Define what to do when a user hits the /precipitation route
@@ -116,47 +118,54 @@ def tobs():
 
 @app.route("/api/v1.0/<start>")
 def temperature_s(start):
-    # Set start and end dates for date range
-    start_date = '2016-08-23'
-    end_date = '2017-08-23'
-    
-    """Return a  list of min_temp, avg_temp, & max_temp for a given start or start-end range"""
 
-    ##Query from database full temp results over a range of dates
-    temp_results = session.query(measurement.date, measurement.tobs).all()
+     """Return a  list of min_temp, avg_temp, & max_temp for a given start range"""
      
-    temp_details = [measurement.date,measurement.tobs]
+     # Create a session to link from Python to the DB
+     session = Session(engine)
+     
+     # Set start and end dates for date range
+     start_date = '2016-08-23'
+     
+     # Query from database full temp results for dates greater than or equal to start_date
+     temp_results = session.query(func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)).\
+     filter(measurement.date >= start_date).all()
 
-    temp_range = session.query(*temp_details).\
-                    filter(measurement.date >= '2016-08-23').\
-                    filter(measurement.date <= '2017-08-23').all()
-        
-    ##Find the min, max, avg temperature in that date range
-    temp_range_min = session.query(temp_range.tobs, func.min(temp_range.tobs)).first()
+     start_temp = []
+     for tobs in temp_results:
+         start_dict = {}
+         start_dict["tobs"] = tobs
+         start_temp.append(start_dict)
 
-    temp_range_max = session.query(temp_range.tobs, func.max(temp_range.tobs)).first()
+     return jsonify(start_temp)
 
-    temp_range_avg = session.query(temp_range.tobs, func.avg(temp_range.tobs)).first()
-
-    return jsonify(temp_range_min)
-    return jsonify(temp_range_max)
-    return jsonify(temp_range_avg)
-
+#################################################################################################
 @app.route("/api/v1.0/<start>/<end>")
 def temperature(start, end):
-    start_date = '2016-08-23'
-    end_date = '2017-08-23'
+
+     """Return a  list of min_temp, avg_temp, & max_temp for a given start-end range"""
     
-    def calc_temps(start_date, end_date):
-        
-        return session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-        filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
-        
-        trip_temps = calc_temps(start_date, end_date)
-        
-        return jsonify(trip_temps)
-        
-        session.close()
+     # Create a session to link from Python to the DB
+     session = Session(engine)
+    
+     #Set start and end dates for date range
+     start_date = '2016-08-23'
+     end_date = '2017-08-23'
+
+     # Query from database full temp results for dates greater than or equal to start_date
+     start_end_results = session.query(func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)).\
+     filter(measurement.date >= start_date).\
+     filter(measurement.date <=end_date).all
+
+     session.close()
+
+     start_end_list = []
+     for tobs in start_end_results:
+         start_end_dict = {}
+         start_end_dict["tobs"] = tobs
+         start_end_list.append(start_end_dict)
+
+     return jsonify(start_end_list)     
 
 if __name__ == "__main__":
      app.run(debug=True)
