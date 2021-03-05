@@ -47,15 +47,15 @@ def home():
          f"/api/v1.0/precipitation<br/>"
          f"/api/v1.0/stations<br/>"
          f"/api/v1.0/tobs<br/>"
-         f"/api/v1.0/<start><br/>"
-         f"/api/v1.0/<start>/<end>"
+         f"Find minimum, average, and max temperaturs for a give date by adding /api/v1.0/ to your browser and inputing the date in a 'yyyy-mm-dd' format<br/>"
+         f"Find minimum, average, and max temperaturs for a date range by adding /api/v1.0/'yyyy-mm-dd'/'yyyy-mm-dd' to your browser"
      )
-
+ 
+ ######################################################################################################
 # Define what to do when a user hits the /precipitation route
 @app.route("/api/v1.0/precipitation")
 def precipitation():
 
-     # Create a session to link from Python to the DB
      session = Session(engine)
 
      """Return a list of all percipitation data from reporting stations"""
@@ -75,7 +75,7 @@ def precipitation():
 ##################################################################################################
 @app.route("/api/v1.0/stations")
 def stations():
-    # Create a session to link from Python to the DB
+
     session = Session(engine)
     
     """Return a list of stations"""
@@ -96,7 +96,6 @@ def stations():
 @app.route("/api/v1.0/tobs")
 def tobs():
     
-    # Create a session to link from Python to the DB
     session = Session(engine)
 
     """Return a tempatures listed for most active data recording station USC00519281"""
@@ -114,22 +113,18 @@ def tobs():
     
     return jsonify(temp_list)
 
-############################HOW TO DO ALIGATOR CLIPS##################################################
+###########################################################################################################
 
 @app.route("/api/v1.0/<start>")
 def temperature_s(start):
 
-     """Return a  list of min_temp, avg_temp, & max_temp for a given start range"""
+     """Return a  list of min_temp, avg_temp, & max_temp for a given start date"""
      
-     # Create a session to link from Python to the DB
      session = Session(engine)
-     
-     # Set start and end dates for date range
-     start_date = '2016-08-23'
      
      # Query from database full temp results for dates greater than or equal to start_date
      temp_results = session.query(func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)).\
-     filter(measurement.date >= start_date).all()
+     filter(measurement.date >= start).all()
 
      start_temp = []
      for tobs in temp_results:
@@ -139,33 +134,22 @@ def temperature_s(start):
 
      return jsonify(start_temp)
 
-#################################################################################################
-@app.route("/api/v1.0/<start>/<end>")
-def temperature(start, end):
+#######################################################################################################
+@app.route("/api/v1.0/<start_date>/<end_date>")
+def start_end(start_date,end_date):
 
-     """Return a  list of min_temp, avg_temp, & max_temp for a given start-end range"""
-    
-     # Create a session to link from Python to the DB
+     """Return a  list of min_temp, avg_temp, & max_temp for a given date range"""
+
      session = Session(engine)
-    
-     #Set start and end dates for date range
-     start_date = '2016-08-23'
-     end_date = '2017-08-23'
 
-     # Query from database full temp results for dates greater than or equal to start_date
-     start_end_results = session.query(func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)).\
-     filter(measurement.date >= start_date).\
-     filter(measurement.date <=end_date).all
-
-     session.close()
-
-     start_end_list = []
-     for tobs in start_end_results:
-         start_end_dict = {}
-         start_end_dict["tobs"] = tobs
-         start_end_list.append(start_end_dict)
-
-     return jsonify(start_end_list)     
+     # Query from database full temp results for dates range
+     temp_results = session.query(func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)).\
+          filter(measurement.date >= start_date).\
+          filter(measurement.date <= end_date).all()
+     
+     session.close() 
+     
+     return jsonify(temp_results)
 
 if __name__ == "__main__":
      app.run(debug=True)
