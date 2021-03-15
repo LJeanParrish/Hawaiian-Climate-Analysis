@@ -19,7 +19,7 @@ I conducted the precipitation analysis by finding the most recent date in the da
 
 Statistical analysis was performed on this 12 month data set, and the data was then plotted. 
 
-![Hawiian_Precipitation_Records.png](Images/Hawiian_Precipitation_Records.png)
+![Hawaiian_Precipitation_Records.png](Images/Hawaiian_Precipitation_Records.png)
 
 
 ### Station Analysis
