@@ -1,4 +1,5 @@
-###Hawaiian Climate Analysis
+
+### Hawaiian Climate Analysis
 
 ![surfs-up.png](Images/surfs-up.png)
 
@@ -59,7 +60,7 @@ I created queries that leveraged the dates of August first to August seventh to 
 
 The minimum, average, and maximum temperatures were then plotted for this timeframe.  
 
-![Trip_Avg_Temp.png](Images/Trip_Avg_Temp.png)
+![Trip_Avg._Temp.png](Images/Trip_Avg._Temp.png)
 
 Similar queries were then constructed to calculate the normal rainfall over that date range.  
 
